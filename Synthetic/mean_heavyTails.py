@@ -27,9 +27,7 @@ def svd_filtering_means(samples, n_discard, discard_mode, return_indices=False):
         sample_mean = np.mean(samples, axis=0)
 
         if dim > 1:
-            v = ssl.svds((samples - sample_mean) / np.sqrt(num_values), k=1)[
-                2
-            ].squeeze()
+            v = ssl.svds((samples - sample_mean) / np.sqrt(num_values), k=1)[2].squeeze()
             v = v.squeeze()
             z = ((samples - sample_mean) @ v) ** 2
         else:
@@ -67,23 +65,20 @@ def geometric_median_of_means(samples, num_buckets, max_iter=100, eps=1e-5):
     )
 
     if bucketed_means.shape[0] == 1:
-        return (
-            bucketed_means.squeeze()
-        )  # when sample size is 1, the only sample is the median
+        return bucketed_means.squeeze()  # when sample size is 1, the only sample is the median
 
     # This reduces the chance that the initial estimate is close to any
     # one of the data points
     gmom_est = np.mean(bucketed_means, axis=0)
 
     for i in range(max_iter):
-        weights = np.reciprocal(
-            np.linalg.norm(bucketed_means - gmom_est, axis=1, ord=2)
-        )[:, np.newaxis]
+        weights = np.reciprocal(np.linalg.norm(bucketed_means - gmom_est, axis=1, ord=2))[
+            :, np.newaxis
+        ]
         old_gmom_est = gmom_est
         gmom_est = np.sum(bucketed_means * weights, axis=0) / np.sum(weights, axis=0)
         if (
-            np.linalg.norm(gmom_est - old_gmom_est, ord=2)
-            / np.linalg.norm(old_gmom_est, ord=2)
+            np.linalg.norm(gmom_est - old_gmom_est, ord=2) / np.linalg.norm(old_gmom_est, ord=2)
             < eps
         ):
             break
@@ -123,10 +118,7 @@ for j in range(len(dims)):
         )
         res_gmom[j, i] = np.linalg.norm(gmom_reg - tparam, 2)
         filterpd_reg = svd_filtering_means(
-            X,
-            int(np.ceil(3.5 * np.log(1.0 / confidence))),
-            "greedy",
-            return_indices=False,
+            X, int(np.ceil(3.5 * np.log(1.0 / confidence))), "greedy", return_indices=False
         )
 
         res_filterpd[j, i] = np.linalg.norm(filterpd_reg - tparam, 2)
@@ -161,10 +153,7 @@ for j in range(len(samples)):
         )
         res_gmom[j, i] = np.linalg.norm(gmom_reg - tparam, 2)
         filterpd_reg = svd_filtering_means(
-            X,
-            int(np.ceil(3.5 * np.log(1.0 / confidence))),
-            "greedy",
-            return_indices=False,
+            X, int(np.ceil(3.5 * np.log(1.0 / confidence))), "greedy", return_indices=False
         )
 
         res_filterpd[j, i] = np.linalg.norm(filterpd_reg - tparam, 2)
@@ -199,10 +188,7 @@ for j in range(len(samples)):
         )
         res_gmom[j, i] = np.linalg.norm(gmom_reg - tparam, 2)
         filterpd_reg = svd_filtering_means(
-            X,
-            int(np.ceil(3.5 * np.log(1.0 / confidence))),
-            "greedy",
-            return_indices=False,
+            X, int(np.ceil(3.5 * np.log(1.0 / confidence))), "greedy", return_indices=False
         )
 
         res_filterpd[j, i] = np.linalg.norm(filterpd_reg - tparam, 2)

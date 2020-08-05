@@ -38,7 +38,7 @@ For the GAN and RealNVP experiments, the models are saved in the directory speci
 For the synthetic experiments, the results are saved in pickle files in `Synthetic/`.
 
 ##### Acknowledgements
--The code for Parzen-window based log-likelihood estimates is adapted from the original [GAN source code by Ian Goodfellow](https://github.com/goodfeli/adversarial).
+- The code for Parzen-window based log-likelihood estimates is adapted from the original [GAN source code by Ian Goodfellow](https://github.com/goodfeli/adversarial).
 - The implementation of Real-NVP is adapted from [Chris Chute's implementation](https://github.com/chrischute/real-nvp).
 - The code for computing the Inception and MODE scores is based on [Shane Barratt's implementation](https://github.com/sbarratt/inception-score-pytorch).
 - For the MODE score, a high-quality classifier is required to be trained on the MNIST dataset - the code for this is taken from [pytorch/examples](https://github.com/pytorch/examples/tree/master/mnist).

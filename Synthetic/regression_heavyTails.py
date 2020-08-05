@@ -27,9 +27,7 @@ def svd_filtering_means(samples, n_discard, discard_mode, return_indices=False):
         sample_mean = np.mean(samples, axis=0)
 
         if dim > 1:
-            v = ssl.svds((samples - sample_mean) / np.sqrt(num_values), k=1)[
-                2
-            ].squeeze()
+            v = ssl.svds((samples - sample_mean) / np.sqrt(num_values), k=1)[2].squeeze()
             v = v.squeeze()
             z = ((samples - sample_mean) @ v) ** 2
         else:
@@ -67,23 +65,20 @@ def geometric_median_of_means(samples, num_buckets, max_iter=100, eps=1e-5):
     )
 
     if bucketed_means.shape[0] == 1:
-        return (
-            bucketed_means.squeeze()
-        )  # when sample size is 1, the only sample is the median
+        return bucketed_means.squeeze()  # when sample size is 1, the only sample is the median
 
     # This reduces the chance that the initial estimate is close to any
     # one of the data points
     gmom_est = np.mean(bucketed_means, axis=0)
 
     for i in range(max_iter):
-        weights = np.reciprocal(
-            np.linalg.norm(bucketed_means - gmom_est, axis=1, ord=2)
-        )[:, np.newaxis]
+        weights = np.reciprocal(np.linalg.norm(bucketed_means - gmom_est, axis=1, ord=2))[
+            :, np.newaxis
+        ]
         old_gmom_est = gmom_est
         gmom_est = np.sum(bucketed_means * weights, axis=0) / np.sum(weights, axis=0)
         if (
-            np.linalg.norm(gmom_est - old_gmom_est, ord=2)
-            / np.linalg.norm(old_gmom_est, ord=2)
+            np.linalg.norm(gmom_est - old_gmom_est, ord=2) / np.linalg.norm(old_gmom_est, ord=2)
             < eps
         ):
             break
@@ -92,14 +87,7 @@ def geometric_median_of_means(samples, num_buckets, max_iter=100, eps=1e-5):
 
 
 def generateData(
-    numSamples,
-    numDim,
-    Xdist,
-    noiseDist,
-    noiseVar,
-    tparam,
-    bX_pareto=10,
-    bNoise_pareto=10,
+    numSamples, numDim, Xdist, noiseDist, noiseVar, tparam, bX_pareto=10, bNoise_pareto=10
 ):
     if Xdist == "gaussian":
         Xrv = sp.multivariate_normal(mean=np.zeros(numDim), cov=np.eye(numDim))
@@ -115,11 +103,7 @@ def generateData(
     elif noiseDist == "pareto":
         noise_rv = sp.pareto(b=bNoise_pareto)
         b_mean, b_var, b_skew, b_kurt = sp.pareto.stats(b=bNoise_pareto, moments="mvsk")
-        noiseVec = (
-            np.sqrt(noiseVar)
-            * (noise_rv.rvs(size=numSamples) - b_mean)
-            / np.sqrt(b_var)
-        )
+        noiseVec = np.sqrt(noiseVar) * (noise_rv.rvs(size=numSamples) - b_mean) / np.sqrt(b_var)
 
     response = np.dot(Xsamples, tparam) + noiseVec
 
@@ -130,9 +114,7 @@ def ols(X, y):
     return np.linalg.lstsq(X, y, rcond=None)[0]
 
 
-def robustGD(
-    X, y, minibatchSize, stepsSize, maxIter, tparam, confidence=0.05, meanEst="filterpd"
-):
+def robustGD(X, y, minibatchSize, stepsSize, maxIter, tparam, confidence=0.05, meanEst="filterpd"):
 
     [n, p] = np.shape(X)
     theta = np.zeros(p)
@@ -149,17 +131,11 @@ def robustGD(
             meanGrad = np.mean(grads, axis=0)
         elif meanEst == "gmom":
             meanGrad = geometric_median_of_means(
-                grads,
-                int(np.ceil(3.5 * np.log(1.0 / confidence))),
-                max_iter=100,
-                eps=1e-5,
+                grads, int(np.ceil(3.5 * np.log(1.0 / confidence))), max_iter=100, eps=1e-5
             )
         elif meanEst == "filterpd":
             meanGrad = svd_filtering_means(
-                grads,
-                int(np.ceil(3.5 * np.log(1.0 / confidence))),
-                "random",
-                return_indices=False,
+                grads, int(np.ceil(3.5 * np.log(1.0 / confidence))), "random", return_indices=False
             )
 
         theta_new = theta - stepsSize * meanGrad
@@ -191,37 +167,16 @@ for j in range(len(dims)):
     print(numDim)
     for i in range(numTrials):
         X, y = generateData(
-            numSamples,
-            numDim,
-            Xdist,
-            noiseDist,
-            noiseVar,
-            tparam,
-            bX_pareto=6,
-            bNoise_pareto=3,
+            numSamples, numDim, Xdist, noiseDist, noiseVar, tparam, bX_pareto=6, bNoise_pareto=3
         )
 
         res_ols[j, i] = np.linalg.norm(ols(X, y) - tparam, 2)
         gmom_reg, errors_gmom, rtol_gmom = robustGD(
-            X,
-            y,
-            numSamples,
-            stepsize,
-            maxIter,
-            tparam,
-            confidence=confidence,
-            meanEst="gmom",
+            X, y, numSamples, stepsize, maxIter, tparam, confidence=confidence, meanEst="gmom"
         )
         res_gmom[j, i] = np.linalg.norm(gmom_reg - tparam, 2)
         filterpd_reg, errors_filterpd, rtol_filterpd = robustGD(
-            X,
-            y,
-            numSamples,
-            stepsize,
-            maxIter,
-            tparam,
-            confidence=confidence,
-            meanEst="filterpd",
+            X, y, numSamples, stepsize, maxIter, tparam, confidence=confidence, meanEst="filterpd"
         )
         res_filterpd[j, i] = np.linalg.norm(filterpd_reg - tparam, 2)
 
@@ -272,37 +227,16 @@ for j in range(len(samples_list)):
     print(numSamples)
     for i in range(numTrials):
         X, y = generateData(
-            numSamples,
-            numDim,
-            Xdist,
-            noiseDist,
-            noiseVar,
-            tparam,
-            bX_pareto=6,
-            bNoise_pareto=3,
+            numSamples, numDim, Xdist, noiseDist, noiseVar, tparam, bX_pareto=6, bNoise_pareto=3
         )
 
         res_ols[j, i] = np.linalg.norm(ols(X, y) - tparam, 2)
         gmom_reg, errors_gmom, rtol_gmom = robustGD(
-            X,
-            y,
-            numSamples,
-            stepsize,
-            maxIter,
-            tparam,
-            confidence=confidence,
-            meanEst="gmom",
+            X, y, numSamples, stepsize, maxIter, tparam, confidence=confidence, meanEst="gmom"
         )
         res_gmom[j, i] = np.linalg.norm(gmom_reg - tparam, 2)
         filterpd_reg, errors_filterpd, rtol_filterpd = robustGD(
-            X,
-            y,
-            numSamples,
-            stepsize,
-            maxIter,
-            tparam,
-            confidence=confidence,
-            meanEst="filterpd",
+            X, y, numSamples, stepsize, maxIter, tparam, confidence=confidence, meanEst="filterpd"
         )
         res_filterpd[j, i] = np.linalg.norm(filterpd_reg - tparam, 2)
 
@@ -354,37 +288,16 @@ for j in range(len(confidence_List)):
     confidence = confidence_List[j]
     for i in range(numTrials):
         X, y = generateData(
-            numSamples,
-            numDim,
-            Xdist,
-            noiseDist,
-            noiseVar,
-            tparam,
-            bX_pareto=6,
-            bNoise_pareto=3,
+            numSamples, numDim, Xdist, noiseDist, noiseVar, tparam, bX_pareto=6, bNoise_pareto=3
         )
 
         res_ols[j, i] = np.linalg.norm(ols(X, y) - tparam, 2)
         gmom_reg, _, _ = robustGD(
-            X,
-            y,
-            numSamples,
-            stepsize,
-            maxIter,
-            tparam,
-            confidence=confidence,
-            meanEst="gmom",
+            X, y, numSamples, stepsize, maxIter, tparam, confidence=confidence, meanEst="gmom"
         )
         res_gmom[j, i] = np.linalg.norm(gmom_reg - tparam, 2)
         filterpd_reg, _, _ = robustGD(
-            X,
-            y,
-            numSamples,
-            stepsize,
-            maxIter,
-            tparam,
-            confidence=confidence,
-            meanEst="filterpd",
+            X, y, numSamples, stepsize, maxIter, tparam, confidence=confidence, meanEst="filterpd"
         )
         res_filterpd[j, i] = np.linalg.norm(filterpd_reg - tparam, 2)
 
