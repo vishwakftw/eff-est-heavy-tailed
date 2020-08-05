@@ -1,4 +1,4 @@
-#### Code for experiments in Robust Estimation via Robust Gradient Estimation and Efficient Estimators for Heavy-Tailed Machine Learning
+### Code for experiments in Robust Estimation via Robust Gradient Estimation and Efficient Estimators for Heavy-Tailed Machine Learning
 
 ##### Code Structure
 There are 4 folders, each of which are described below:
@@ -38,11 +38,11 @@ For the GAN and RealNVP experiments, the models are saved in the directory speci
 For the synthetic experiments, the results are saved in pickle files in `Synthetic/`.
 
 ##### Acknowledgements
-The code for Parzen-window based log-likelihood estimates is adapted from the original [GAN source code by Ian Goodfellow](https://github.com/goodfeli/adversarial).
-The implementation of Real-NVP is adapted from [Chris Chute's implementation](https://github.com/chrischute/real-nvp).
-The code for computing the Inception and MODE scores is based on [Shane Barratt's implementation](https://github.com/sbarratt/inception-score-pytorch).
-For the MODE score, a high-quality classifier is required to be trained on the MNIST dataset - the code for this is taken from [https://github.com/pytorch/examples](https://github.com/pytorch/examples/tree/master/mnist).
-The code for the `alpha`-index estimator is borrowed from [Umut Simsekli's implementation](https://github.com/umutsimsekli/sgd_tail_index).
+-The code for Parzen-window based log-likelihood estimates is adapted from the original [GAN source code by Ian Goodfellow](https://github.com/goodfeli/adversarial).
+- The implementation of Real-NVP is adapted from [Chris Chute's implementation](https://github.com/chrischute/real-nvp).
+- The code for computing the Inception and MODE scores is based on [Shane Barratt's implementation](https://github.com/sbarratt/inception-score-pytorch).
+- For the MODE score, a high-quality classifier is required to be trained on the MNIST dataset - the code for this is taken from [pytorch/examples](https://github.com/pytorch/examples/tree/master/mnist).
+- The code for the `alpha`-index estimator is borrowed from [Umut Simsekli's implementation](https://github.com/umutsimsekli/sgd_tail_index).
 
 The respective copyright notices are attached in the respective folders.
 
